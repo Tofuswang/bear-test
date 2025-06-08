@@ -122,10 +122,11 @@ class ShareIdentityModal extends BaseModal {
                 <div class="option-label">${option.label}</div>
                 <div class="option-value">${option.value}</div>
               </div>
-              <div class="option-checkbox">
-                <span class="checkbox ${this.selectedTypes.includes(option.type) ? 'checked' : ''}">
-                  ${this.selectedTypes.includes(option.type) ? '✓' : ''}
-                </span>
+              <div class="option-toggle">
+                <label class="toggle-switch">
+                  <input type="checkbox" ${this.selectedTypes.includes(option.type) ? 'checked' : ''}>
+                  <span class="toggle-slider"></span>
+                </label>
               </div>
             </div>
           `).join('')}
@@ -146,22 +147,18 @@ class ShareIdentityModal extends BaseModal {
   }
 
   setupSelectionListeners() {
-    const options = this.modal.querySelectorAll('.verification-option');
+    const toggles = this.modal.querySelectorAll('.option-toggle input[type="checkbox"]');
     
-    options.forEach(option => {
-      option.addEventListener('click', () => {
-        const type = option.dataset.type;
+    toggles.forEach(toggle => {
+      toggle.addEventListener('change', () => {
+        const type = toggle.parentNode.parentNode.dataset.type;
         
-        if (this.selectedTypes.includes(type)) {
-          this.selectedTypes = this.selectedTypes.filter(t => t !== type);
-          option.classList.remove('selected');
-          option.querySelector('.checkbox').classList.remove('checked');
-          option.querySelector('.checkbox').textContent = '';
-        } else {
+        if (toggle.checked) {
           this.selectedTypes.push(type);
-          option.classList.add('selected');
-          option.querySelector('.checkbox').classList.add('checked');
-          option.querySelector('.checkbox').textContent = '✓';
+          toggle.parentNode.parentNode.classList.add('selected');
+        } else {
+          this.selectedTypes = this.selectedTypes.filter(t => t !== type);
+          toggle.parentNode.parentNode.classList.remove('selected');
         }
         
         // 更新下一步按鈕狀態
@@ -374,46 +371,322 @@ class ShareIdentityModal extends BaseModal {
 class VerifyIdentityModal extends BaseModal {
   constructor() {
     super('verify-modal');
-    this.currentStep = 'scan'; // scan, verify, result
+    this.currentStep = 'select'; // select, scan, verify, result
+    this.selectedItems = [];
+    this.cameraStream = null;
+    this.scanInterval = null;
   }
 
   show() {
-    this.currentStep = 'scan';
-    this.renderScanStep();
+    this.currentStep = 'select';
+    this.selectedItems = [];
+    this.renderSelectStep();
     super.show();
   }
 
+  renderSelectStep() {
+    const html = `
+      <div class="verify-select">
+        <div class="modal-header">
+          <h3>選擇驗證項目</h3>
+          <p>請選擇您要驗證對方的身份資訊</p>
+        </div>
+
+        <div class="verification-options">
+          <div class="option-item" data-type="nationality">
+            <div class="option-content">
+              <div class="option-icon">🏳️</div>
+              <div class="option-info">
+                <div class="option-title">國籍</div>
+                <div class="option-description">驗證國籍資訊</div>
+              </div>
+            </div>
+            <div class="option-toggle">
+              <label class="toggle-switch">
+                <input type="checkbox" id="verify-nationality" value="nationality">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="option-item" data-type="age">
+            <div class="option-content">
+              <div class="option-icon">🎂</div>
+              <div class="option-info">
+                <div class="option-title">年齡</div>
+                <div class="option-description">驗證年齡資訊</div>
+              </div>
+            </div>
+            <div class="option-toggle">
+              <label class="toggle-switch">
+                <input type="checkbox" id="verify-age" value="age">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="option-item" data-type="address">
+            <div class="option-content">
+              <div class="option-icon">🏠</div>
+              <div class="option-info">
+                <div class="option-title">戶籍地</div>
+                <div class="option-description">驗證戶籍地址</div>
+              </div>
+            </div>
+            <div class="option-toggle">
+              <label class="toggle-switch">
+                <input type="checkbox" id="verify-address" value="address">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy-notice">
+          <div class="notice-icon">🔒</div>
+          <div class="notice-content">
+            <p><strong>隱私保護</strong></p>
+            <p>只會驗證您選擇的項目，其他個人資訊不會被存取或顯示。</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button secondary" onclick="verifyModal.hide()">取消</button>
+          <button class="modal-button primary" onclick="verifyModal.proceedToScan()" id="proceed-verify-btn" disabled>
+            繼續掃描
+            <span class="button-arrow">→</span>
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.setContent(html);
+    this.setupSelectStepListeners();
+  }
+
+  setupSelectStepListeners() {
+    const checkboxes = this.modal.querySelectorAll('input[type="checkbox"]');
+    const proceedBtn = this.modal.querySelector('#proceed-verify-btn');
+
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        this.updateSelectedItems();
+        proceedBtn.disabled = this.selectedItems.length === 0;
+        
+        // 更新按鈕文字
+        if (this.selectedItems.length > 0) {
+          proceedBtn.innerHTML = `
+            驗證 ${this.selectedItems.length} 個項目
+            <span class="button-arrow">→</span>
+          `;
+        } else {
+          proceedBtn.innerHTML = `
+            繼續掃描
+            <span class="button-arrow">→</span>
+          `;
+        }
+      });
+    });
+  }
+
+  updateSelectedItems() {
+    const checkboxes = this.modal.querySelectorAll('input[type="checkbox"]:checked');
+    this.selectedItems = Array.from(checkboxes).map(cb => cb.value);
+  }
+
+  proceedToScan() {
+    if (this.selectedItems.length === 0) {
+      showToast('請至少選擇一個驗證項目', 'warning');
+      return;
+    }
+    
+    this.currentStep = 'scan';
+    this.renderScanStep();
+  }
+
   renderScanStep() {
+    const selectedItemsText = this.selectedItems.map(item => getVerificationTypeName(item)).join('、');
+    
     const html = `
       <div class="verify-scan">
         <div class="scan-description">
           <h3>掃描對方的 QR Code</h3>
           <p>請使用相機掃描對方提供的身份驗證 QR Code</p>
+          <div class="selected-items">
+            <span class="selected-label">將驗證：</span>
+            <span class="selected-values">${selectedItemsText}</span>
+          </div>
         </div>
 
-        <div class="camera-placeholder">
-          <div class="camera-icon">📷</div>
-          <p>相機功能</p>
-          <small>在實際應用中這裡會顯示相機畫面</small>
+        <div class="camera-container">
+          <video id="camera-preview" class="camera-preview" autoplay playsinline></video>
+          <div class="camera-overlay">
+            <div class="scan-frame">
+              <div class="scan-corners">
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+              </div>
+              <div class="scan-line"></div>
+            </div>
+          </div>
+          <div class="camera-placeholder hidden">
+            <div class="camera-icon">📷</div>
+            <p>相機功能</p>
+            <small>正在啟動相機...</small>
+          </div>
         </div>
 
         <div class="scan-tips">
           <h4>掃描提示</h4>
           <ul>
-            <li>確保 QR Code 清晰可見</li>
-            <li>保持適當距離</li>
+            <li>將 QR Code 對準掃描框內</li>
+            <li>保持適當距離（10-30cm）</li>
             <li>確保光線充足</li>
+            <li>保持手機穩定</li>
           </ul>
         </div>
 
         <div class="modal-actions">
-          <button class="modal-button secondary" onclick="verifyModal.hide()">取消</button>
+          <button class="modal-button secondary" onclick="verifyModal.show()">重新選擇</button>
+          <button class="modal-button tertiary" onclick="verifyModal.toggleFlashlight()" id="flashlight-btn">
+            <span class="button-icon">🔦</span>
+            開啟手電筒
+          </button>
           <button class="modal-button primary" onclick="verifyModal.simulateScan()">模擬掃描</button>
         </div>
       </div>
     `;
 
     this.setContent(html);
+    this.startCamera();
+  }
+
+  async startCamera() {
+    const video = this.modal.querySelector('#camera-preview');
+    const placeholder = this.modal.querySelector('.camera-placeholder');
+    
+    try {
+      // 請求相機權限
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'environment', // 使用後置相機
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      });
+      
+      video.srcObject = stream;
+      this.cameraStream = stream;
+      
+      // 隱藏佔位符，顯示相機畫面
+      placeholder.classList.add('hidden');
+      video.classList.remove('hidden');
+      
+      // 開始 QR Code 掃描
+      this.startQRScanning(video);
+      
+    } catch (error) {
+      console.error('無法啟動相機:', error);
+      placeholder.innerHTML = `
+        <div class="camera-icon">❌</div>
+        <p>無法啟動相機</p>
+        <small>${error.message}</small>
+        <button class="retry-camera-btn" onclick="verifyModal.startCamera()">重試</button>
+      `;
+      
+      showToast('相機啟動失敗，請檢查權限設定', 'error');
+    }
+  }
+
+  startQRScanning(video) {
+    // 創建 canvas 用於圖像處理
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    
+    const scanInterval = setInterval(() => {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        // 在實際應用中，這裡會使用 QR Code 掃描庫
+        // 例如 jsQR 或 qr-scanner
+        // const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        // const qrCode = jsQR(imageData.data, imageData.width, imageData.height);
+        
+        // 模擬掃描成功（實際應用中會檢測到真實的 QR Code）
+        // if (qrCode) {
+        //   clearInterval(scanInterval);
+        //   this.handleQRCodeDetected(qrCode.data);
+        // }
+      }
+    }, 100);
+    
+    this.scanInterval = scanInterval;
+  }
+
+  handleQRCodeDetected(qrData) {
+    // 停止相機和掃描
+    this.stopCamera();
+    
+    // 顯示掃描成功提示
+    showToast('QR Code 掃描成功！', 'success');
+    
+    // 處理 QR Code 數據並進行驗證
+    this.processQRCode(qrData);
+  }
+
+  processQRCode(qrData) {
+    // 在實際應用中，這裡會解析 QR Code 中的驗證請求
+    // 並與選擇的驗證項目進行比對
+    this.simulateScan();
+  }
+
+  stopCamera() {
+    if (this.cameraStream) {
+      this.cameraStream.getTracks().forEach(track => track.stop());
+      this.cameraStream = null;
+    }
+    
+    if (this.scanInterval) {
+      clearInterval(this.scanInterval);
+      this.scanInterval = null;
+    }
+  }
+
+  toggleFlashlight() {
+    const flashlightBtn = this.modal.querySelector('#flashlight-btn');
+    
+    if (this.cameraStream) {
+      const track = this.cameraStream.getVideoTracks()[0];
+      const capabilities = track.getCapabilities();
+      
+      if (capabilities.torch) {
+        const settings = track.getSettings();
+        const newTorchState = !settings.torch;
+        
+        track.applyConstraints({
+          advanced: [{ torch: newTorchState }]
+        }).then(() => {
+          flashlightBtn.innerHTML = newTorchState 
+            ? '<span class="button-icon">🔦</span>關閉手電筒'
+            : '<span class="button-icon">🔦</span>開啟手電筒';
+        }).catch(error => {
+          console.error('無法控制手電筒:', error);
+          showToast('手電筒控制失敗', 'error');
+        });
+      } else {
+        showToast('此設備不支援手電筒功能', 'warning');
+      }
+    }
+  }
+
+  hide() {
+    // 關閉相機
+    this.stopCamera();
+    super.hide();
   }
 
   async simulateScan() {
@@ -424,7 +697,7 @@ class VerifyIdentityModal extends BaseModal {
       await delay(2000);
       
       const response = await mockApiCall('/api/identity/verify', {
-        requestedInfo: ['nationality', 'age']
+        requestedInfo: this.selectedItems
       }, 1500);
       
       if (response.success) {
@@ -538,7 +811,7 @@ class VerifyIdentityModal extends BaseModal {
     const record = {
       type: 'verify',
       action: '驗證他人',
-      verificationTypes: ['nationality', 'age'],
+      verificationTypes: this.selectedItems,
       status: 'completed',
       target: '身份持有者'
     };
@@ -1116,4 +1389,13 @@ function getVerificationTypeName(type) {
     address: '戶籍地'
   };
   return names[type] || type;
+}
+
+function getVerificationTypeIcon(type) {
+  const icons = {
+    nationality: '🇹🇼',
+    age: '📅',
+    address: '🏠'
+  };
+  return icons[type] || '';
 }
