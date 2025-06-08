@@ -34,6 +34,14 @@ class BearlessApp {
             });
         });
 
+        // History button
+        const historyBtn = document.getElementById('history-btn');
+        if (historyBtn) {
+            historyBtn.addEventListener('click', () => {
+                window.modals.showHistory();
+            });
+        }
+
         // MyData connection
         const connectBtn = document.getElementById('connect-mydata-btn');
         if (connectBtn) {
