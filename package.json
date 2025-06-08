@@ -1,0 +1,15 @@
+{
+  "name": "bearless-mvp",
+  "version": "1.0.0",
+  "description": "Bearless MVP - iOS-style Web App for Identity Verification",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "start": "python3 -m http.server 8080"
+  },
+  "keywords": ["identity", "verification", "ios", "web-app", "mvp"],
+  "author": "Bearless Team",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

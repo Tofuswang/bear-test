@@ -1,0 +1,439 @@
+/* Bearless MVP - Animation Styles */
+
+/* Modal Animations */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+}
+
+.modal {
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  background-color: var(--background-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+.modal-overlay.show .modal {
+  transform: scale(1) translateY(0);
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.modal-header {
+  padding: var(--spacing-lg);
+  border-bottom: 0.5px solid var(--ios-gray-5);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.modal-title {
+  font-size: var(--font-size-title3);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  flex: 1;
+}
+
+.modal-close {
+  position: absolute;
+  right: var(--spacing-lg);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background-color: var(--ios-gray-6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background-color: var(--ios-gray-5);
+  color: var(--text-primary);
+}
+
+.modal-close:active {
+  transform: translateY(-50%) scale(0.9);
+}
+
+.modal-body {
+  flex: 1;
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* QR Code Animation */
+.qr-code-container {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+}
+
+.qr-code {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto var(--spacing-lg);
+  background-color: white;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  box-shadow: var(--shadow-md);
+  animation: qrCodeAppear 0.5s ease-out;
+}
+
+@keyframes qrCodeAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) rotate(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.qr-code-description {
+  font-size: var(--font-size-subhead);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: var(--spacing-lg);
+}
+
+.qr-code-timer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-footnote);
+  color: var(--text-secondary);
+}
+
+.timer-circle {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--ios-gray-4);
+  border-top: 2px solid var(--ios-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Verification Steps Animation */
+.verification-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.verification-step {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--background-secondary);
+  border-radius: var(--radius-md);
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: stepAppear 0.5s ease-out forwards;
+}
+
+.verification-step:nth-child(1) { animation-delay: 0.1s; }
+.verification-step:nth-child(2) { animation-delay: 0.2s; }
+.verification-step:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes stepAppear {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.step-icon.pending {
+  background-color: var(--ios-gray-5);
+  color: var(--text-secondary);
+}
+
+.step-icon.active {
+  background-color: var(--ios-blue);
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.step-icon.completed {
+  background-color: var(--ios-green);
+  color: white;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 122, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+  }
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.step-description {
+  font-size: var(--font-size-subhead);
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Success/Error Animations */
+.result-container {
+  text-align: center;
+  padding: var(--spacing-xl) 0;
+}
+
+.result-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--spacing-lg);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  animation: resultAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.result-icon.success {
+  background-color: var(--ios-green);
+  color: white;
+}
+
+.result-icon.error {
+  background-color: var(--ios-red);
+  color: white;
+}
+
+@keyframes resultAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.result-title {
+  font-size: var(--font-size-title2);
+  font-weight: 600;
+  margin-bottom: var(--spacing-sm);
+}
+
+.result-title.success {
+  color: var(--ios-green);
+}
+
+.result-title.error {
+  color: var(--ios-red);
+}
+
+.result-description {
+  font-size: var(--font-size-body);
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Button Animations */
+.modal-button {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-body);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: var(--spacing-sm);
+}
+
+.modal-button:last-child {
+  margin-bottom: 0;
+}
+
+.modal-button.primary {
+  background-color: var(--ios-blue);
+  color: white;
+}
+
+.modal-button.primary:hover {
+  background-color: var(--ios-blue-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.modal-button.secondary {
+  background-color: var(--ios-gray-6);
+  color: var(--text-primary);
+}
+
+.modal-button.secondary:hover {
+  background-color: var(--ios-gray-5);
+}
+
+.modal-button:active {
+  transform: scale(0.98);
+}
+
+/* Loading States */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl) 0;
+}
+
+.loading-spinner-large {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--ios-gray-5);
+  border-top: 4px solid var(--ios-blue);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--spacing-lg);
+}
+
+.loading-text {
+  font-size: var(--font-size-body);
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* Haptic Feedback Simulation */
+.haptic-light {
+  animation: hapticLight 0.1s ease-out;
+}
+
+.haptic-medium {
+  animation: hapticMedium 0.15s ease-out;
+}
+
+.haptic-heavy {
+  animation: hapticHeavy 0.2s ease-out;
+}
+
+@keyframes hapticLight {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+@keyframes hapticMedium {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+  100% { transform: scale(1); }
+}
+
+@keyframes hapticHeavy {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+
+/* Slide Transitions */
+.slide-enter {
+  transform: translateX(100%);
+}
+
+.slide-enter-active {
+  transform: translateX(0);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.slide-exit {
+  transform: translateX(0);
+}
+
+.slide-exit-active {
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Fade Transitions */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}

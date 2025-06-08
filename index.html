@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bearless - 身份驗證</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Bearless">
+    <meta name="theme-color" content="#007AFF">
+    
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/icon-180.png">
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="assets/icons/icon-32.svg">
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/animations.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-content">
+                <div class="app-icon">🐻</div>
+                <h1>Bearless</h1>
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+
+        <!-- Main App Container -->
+        <div id="main-app" class="main-app hidden">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span class="time" id="current-time">9:41</span>
+                <div class="status-indicators">
+                    <span class="signal">📶</span>
+                    <span class="wifi">📶</span>
+                    <span class="battery">🔋</span>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Identity Tab Content -->
+                <div id="identity-tab" class="tab-content active">
+                    <!-- Navigation Bar -->
+                    <div class="nav-bar">
+                        <h1 class="nav-title">身份驗證</h1>
+                        <button class="nav-button" id="history-btn">
+                            <span class="icon">📋</span>
+                        </button>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="main-content">
+                        <!-- MyData Connection Status -->
+                        <div id="mydata-status" class="mydata-status">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+
+                        <!-- ID Card Display -->
+                        <div class="id-card-container">
+                            <div class="id-card" id="id-card">
+                                <div class="card-header">
+                                    <span class="card-title">中華民國身分證</span>
+                                    <span class="card-status connected" id="card-status">已連接</span>
+                                </div>
+                                <div class="card-content">
+                                    <div class="card-photo">
+                                        <div class="photo-placeholder">👤</div>
+                                    </div>
+                                    <div class="card-info">
+                                        <div class="info-row">
+                                            <span class="label">姓名</span>
+                                            <span class="value" id="user-name">王小明</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">身分證字號</span>
+                                            <span class="value masked" id="user-id">A123******</span>
+                                        </div>
+                                        <div class="info-row">
+                                            <span class="label">出生日期</span>
+                                            <span class="value masked" id="user-birth">民國**年**月**日</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="primary-button share-button" id="share-identity-btn">
+                                <span class="button-icon">🆔</span>
+                                <span class="button-text">分享我的身份</span>
+                                <span class="button-arrow">→</span>
+                            </button>
+                            <button class="primary-button verify-button" id="verify-identity-btn">
+                                <span class="button-icon">🔍</span>
+                                <span class="button-text">驗證他人身份</span>
+                                <span class="button-arrow">→</span>
+                            </button>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <h3 class="section-title">快速驗證</h3>
+                            <div class="quick-action-grid">
+                                <button class="quick-action-item" data-type="nationality">
+                                    <span class="quick-icon">🇹🇼</span>
+                                    <span class="quick-label">國籍</span>
+                                </button>
+                                <button class="quick-action-item" data-type="age">
+                                    <span class="quick-icon">🎂</span>
+                                    <span class="quick-label">年齡</span>
+                                </button>
+                                <button class="quick-action-item" data-type="address">
+                                    <span class="quick-icon">🏠</span>
+                                    <span class="quick-label">戶籍</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Today's Activity -->
+                        <div class="activity-summary">
+                            <h3 class="section-title">今日活動</h3>
+                            <div class="activity-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number" id="share-count">3</span>
+                                    <span class="stat-label">分享次數</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number" id="verify-count">1</span>
+                                    <span class="stat-label">驗證次數</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab Content -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="nav-bar">
+                        <h1 class="nav-title">設定</h1>
+                    </div>
+                    <div class="main-content">
+                        <div class="settings-sections">
+                            <!-- Account Section -->
+                            <div class="settings-section">
+                                <h3 class="section-title">帳戶</h3>
+                                <div class="settings-list">
+                                    <div class="settings-item">
+                                        <span class="settings-icon">👤</span>
+                                        <span class="settings-label">個人資料</span>
+                                        <span class="settings-arrow">→</span>
+                                    </div>
+                                    <div class="settings-item">
+                                        <span class="settings-icon">🔐</span>
+                                        <span class="settings-label">隱私設定</span>
+                                        <span class="settings-arrow">→</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MyData Section -->
+                            <div class="settings-section">
+                                <h3 class="section-title">MyData 連接</h3>
+                                <div class="settings-list">
+                                    <div class="settings-item">
+                                        <span class="settings-icon">🔗</span>
+                                        <span class="settings-label">連接狀態</span>
+                                        <span class="settings-status connected">已連接</span>
+                                    </div>
+                                    <div class="settings-item">
+                                        <span class="settings-icon">🔄</span>
+                                        <span class="settings-label">重新連接</span>
+                                        <span class="settings-arrow">→</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- App Section -->
+                            <div class="settings-section">
+                                <h3 class="section-title">應用程式</h3>
+                                <div class="settings-list">
+                                    <div class="settings-item">
+                                        <span class="settings-icon">🔔</span>
+                                        <span class="settings-label">通知設定</span>
+                                        <span class="settings-arrow">→</span>
+                                    </div>
+                                    <div class="settings-item">
+                                        <span class="settings-icon">ℹ️</span>
+                                        <span class="settings-label">關於 Bearless</span>
+                                        <span class="settings-arrow">→</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Bar -->
+            <div class="tab-bar">
+                <button class="tab-item active" data-tab="identity">
+                    <span class="tab-icon">🔄</span>
+                    <span class="tab-label">身份驗證</span>
+                </button>
+                <button class="tab-item" data-tab="settings">
+                    <span class="tab-icon">⚙️</span>
+                    <span class="tab-label">設定</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <!-- Share Identity Modal -->
+            <div id="share-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="modal-close" id="share-modal-close">✕</button>
+                        <h2 class="modal-title">分享身份資訊</h2>
+                    </div>
+                    <div class="modal-body" id="share-modal-body">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verify Identity Modal -->
+            <div id="verify-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="modal-close" id="verify-modal-close">✕</button>
+                        <h2 class="modal-title">驗證他人身份</h2>
+                    </div>
+                    <div class="modal-body" id="verify-modal-body">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Modal -->
+            <div id="history-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="modal-close" id="history-modal-close">✕</button>
+                        <h2 class="modal-title">驗證記錄</h2>
+                    </div>
+                    <div class="modal-body" id="history-modal-body">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
