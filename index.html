@@ -71,7 +71,7 @@
                         </div>
 
                         <!-- ID Card Display -->
-                        <div class="id-card-container">
+                        <div class="id-card-container hidden">
                             <div class="id-card" id="id-card">
                                 <div class="card-header">
                                     <span class="card-title">中華民國身分證</span>
@@ -100,7 +100,7 @@
                         </div>
 
                         <!-- Main Action Buttons -->
-                        <div class="action-buttons">
+                        <div class="action-buttons hidden">
                             <button class="primary-button share-button" id="share-identity-btn">
                                 <span class="button-icon">🆔</span>
                                 <span class="button-text">分享我的身份</span>
@@ -114,7 +114,7 @@
                         </div>
 
                         <!-- Quick Actions -->
-                        <div class="quick-actions">
+                        <div class="quick-actions hidden">
                             <h3 class="section-title">快速驗證</h3>
                             <div class="quick-action-grid">
                                 <button class="quick-action-item" data-type="nationality">
@@ -133,7 +133,7 @@
                         </div>
 
                         <!-- Today's Activity -->
-                        <div class="activity-summary">
+                        <div class="activity-summary hidden">
                             <h3 class="section-title">今日活動</h3>
                             <div class="activity-stats">
                                 <div class="stat-item">
@@ -260,6 +260,19 @@
                         <h2 class="modal-title">驗證記錄</h2>
                     </div>
                     <div class="modal-body" id="history-modal-body">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- MyData Connection Modal -->
+            <div id="mydata-modal" class="modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button class="modal-close" id="mydata-modal-close">✕</button>
+                        <h2 class="modal-title">連接 MyData</h2>
+                    </div>
+                    <div class="modal-body" id="mydata-modal-body">
                         <!-- Content will be populated by JavaScript -->
                     </div>
                 </div>

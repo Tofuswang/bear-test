@@ -59,10 +59,10 @@ class BearlessApp {
         }
 
         // Quick verification buttons
-        document.querySelectorAll('.quick-verify-btn').forEach(btn => {
+        document.querySelectorAll('.quick-action-item').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const type = e.target.dataset.type;
-                window.modals.showShareIdentity(type);
+                const type = e.currentTarget.dataset.type;
+                window.modals.showShareIdentity([type]);
             });
         });
     }
@@ -115,41 +115,111 @@ class BearlessApp {
     }
 
     updateMyDataUI() {
-        const idCard = document.querySelector('.id-card');
-        const connectSection = document.querySelector('.connect-section');
+        const mydataStatus = document.getElementById('mydata-status');
+        const idCard = document.querySelector('.id-card-container');
+        const actionButtons = document.querySelector('.action-buttons');
+        const quickActions = document.querySelector('.quick-actions');
+        const activitySummary = document.querySelector('.activity-summary');
         
         if (this.isMyDataConnected) {
-            idCard?.classList.remove('hidden');
-            connectSection?.classList.add('hidden');
+            // Show connected state
+            if (mydataStatus) {
+                mydataStatus.innerHTML = `
+                    <div class="mydata-status connected">
+                        <div class="mydata-status-header">
+                            <h3 class="mydata-status-title">MyData 已連接</h3>
+                            <div class="mydata-status-indicator connected"></div>
+                        </div>
+                        <p class="mydata-status-description">您的身分證資料已安全連接，可以開始進行身份驗證。</p>
+                    </div>
+                `;
+            }
+            
+            // Show ID card and other sections with animation
+            setTimeout(() => {
+                if (idCard) {
+                    idCard.classList.remove('hidden');
+                    idCard.classList.add('fade-in');
+                }
+            }, 100);
+            
+            setTimeout(() => {
+                if (actionButtons) {
+                    actionButtons.classList.remove('hidden');
+                    actionButtons.classList.add('fade-in');
+                }
+            }, 200);
+            
+            setTimeout(() => {
+                if (quickActions) {
+                    quickActions.classList.remove('hidden');
+                    quickActions.classList.add('fade-in');
+                }
+            }, 300);
+            
+            setTimeout(() => {
+                if (activitySummary) {
+                    activitySummary.classList.remove('hidden');
+                    activitySummary.classList.add('fade-in');
+                }
+            }, 400);
             
             // Update card with stored data
             const userData = window.storage.getUserData();
             if (userData) {
-                document.getElementById('user-name').textContent = userData.name;
-                document.getElementById('user-id').textContent = userData.id;
-                document.getElementById('user-nationality').textContent = userData.nationality;
-                document.getElementById('user-age').textContent = userData.age;
-                document.getElementById('user-address').textContent = userData.address;
+                const userNameEl = document.getElementById('user-name');
+                const userIdEl = document.getElementById('user-id');
+                
+                if (userNameEl) userNameEl.textContent = userData.name;
+                if (userIdEl) userIdEl.textContent = userData.id.substring(0, 4) + '******';
             }
         } else {
+            // Show disconnected state with connect button
+            if (mydataStatus) {
+                mydataStatus.innerHTML = `
+                    <div class="mydata-status disconnected">
+                        <div class="mydata-status-header">
+                            <h3 class="mydata-status-title">尚未連接 MyData</h3>
+                            <div class="mydata-status-indicator disconnected"></div>
+                        </div>
+                        <p class="mydata-status-description">請先連接您的 MyData 帳戶以開始使用身份驗證功能。</p>
+                        <button class="primary-button" id="connect-mydata-btn" style="margin-top: 16px;">
+                            <span class="button-icon">🔗</span>
+                            <span class="button-text">連接 MyData</span>
+                            <span class="button-arrow">→</span>
+                        </button>
+                    </div>
+                `;
+                
+                // Re-attach event listener for the new connect button
+                const connectBtn = document.getElementById('connect-mydata-btn');
+                if (connectBtn) {
+                    connectBtn.addEventListener('click', () => {
+                        window.modals.showMyDataConnection();
+                    });
+                }
+            }
+            
+            // Hide other sections when not connected
             idCard?.classList.add('hidden');
-            connectSection?.classList.remove('hidden');
+            actionButtons?.classList.add('hidden');
+            quickActions?.classList.add('hidden');
+            activitySummary?.classList.add('hidden');
         }
     }
 
     updateRecordsUI() {
         const records = window.storage.getVerificationRecords();
-        const todayCount = records.filter(r => this.isToday(new Date(r.timestamp))).length;
-        const monthCount = records.filter(r => this.isThisMonth(new Date(r.timestamp))).length;
+        const todayRecords = records.filter(r => this.isToday(new Date(r.timestamp)));
+        const shareCount = todayRecords.filter(r => r.type === 'share').length;
+        const verifyCount = todayRecords.filter(r => r.type === 'verify').length;
         
-        // Update today's activity
-        document.getElementById('today-count').textContent = todayCount;
-        document.getElementById('month-count').textContent = monthCount;
+        // Update today's activity stats
+        const shareCountEl = document.getElementById('share-count');
+        const verifyCountEl = document.getElementById('verify-count');
         
-        // Update success rate
-        const successCount = records.filter(r => r.success).length;
-        const successRate = records.length > 0 ? Math.round((successCount / records.length) * 100) : 100;
-        document.getElementById('success-rate').textContent = `${successRate}%`;
+        if (shareCountEl) shareCountEl.textContent = shareCount;
+        if (verifyCountEl) verifyCountEl.textContent = verifyCount;
     }
 
     isToday(date) {

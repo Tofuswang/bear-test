@@ -558,6 +558,456 @@ class VerifyIdentityModal extends BaseModal {
 }
 
 /**
+ * MyData 連接 Modal
+ */
+class MyDataConnectionModal extends BaseModal {
+  constructor() {
+    super('mydata-modal');
+    this.currentStep = 'intro'; // intro, authorization, progress, success, error
+    this.connectionData = null;
+  }
+
+  show() {
+    this.currentStep = 'intro';
+    this.renderIntroStep();
+    super.show();
+  }
+
+  renderIntroStep() {
+    const html = `
+      <div class="mydata-connection-intro">
+        <div class="step-indicator">
+          <div class="step-dots">
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <p class="step-text">步驟 1/4</p>
+        </div>
+
+        <div class="intro-content">
+          <div class="intro-icon">
+            <div class="mydata-logo">
+              <span class="logo-icon">🆔</span>
+              <span class="connection-icon">🔗</span>
+            </div>
+          </div>
+          
+          <h3 class="intro-title">連接 MyData 帳戶</h3>
+          <p class="intro-description">
+            MyData 是政府提供的數位身分服務，讓您安全地管理個人資料。
+          </p>
+
+          <div class="feature-list">
+            <div class="feature-item">
+              <span class="feature-icon">🔒</span>
+              <span class="feature-text">安全取得您的身分證資訊</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">🛡️</span>
+              <span class="feature-text">資料加密保護，完全隱私</span>
+            </div>
+            <div class="feature-item">
+              <span class="feature-icon">⚡</span>
+              <span class="feature-text">隨時可以中斷連接</span>
+            </div>
+          </div>
+
+          <div class="privacy-notice">
+            <div class="notice-icon">ℹ️</div>
+            <div class="notice-text">
+              <strong>隱私保護</strong><br>
+              您的資料僅用於生成驗證憑證，不會被儲存或分享給第三方。
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button secondary" onclick="mydataModal.hide()">取消</button>
+          <button class="modal-button primary" onclick="mydataModal.proceedToAuthorization()">
+            繼續
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.setContent(html);
+  }
+
+  proceedToAuthorization() {
+    this.currentStep = 'authorization';
+    this.renderAuthorizationStep();
+  }
+
+  renderAuthorizationStep() {
+    const html = `
+      <div class="mydata-authorization">
+        <div class="step-indicator">
+          <div class="step-dots">
+            <span class="dot completed">✓</span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <p class="step-text">步驟 2/4</p>
+        </div>
+
+        <div class="authorization-content">
+          <div class="auth-icon">
+            <span class="shield-icon">🛡️</span>
+          </div>
+          
+          <h3 class="auth-title">資料使用授權</h3>
+          <p class="auth-description">
+            請確認您同意 Bearless 存取以下資料項目：
+          </p>
+
+          <div class="permission-list">
+            <div class="permission-item">
+              <div class="permission-checkbox">
+                <input type="checkbox" id="perm-name" checked disabled>
+                <label for="perm-name">
+                  <span class="checkbox-icon">✓</span>
+                </label>
+              </div>
+              <div class="permission-content">
+                <div class="permission-title">姓名</div>
+                <div class="permission-desc">用於身份確認</div>
+              </div>
+            </div>
+
+            <div class="permission-item">
+              <div class="permission-checkbox">
+                <input type="checkbox" id="perm-birth" checked disabled>
+                <label for="perm-birth">
+                  <span class="checkbox-icon">✓</span>
+                </label>
+              </div>
+              <div class="permission-content">
+                <div class="permission-title">出生日期</div>
+                <div class="permission-desc">用於年齡驗證</div>
+              </div>
+            </div>
+
+            <div class="permission-item">
+              <div class="permission-checkbox">
+                <input type="checkbox" id="perm-address" checked disabled>
+                <label for="perm-address">
+                  <span class="checkbox-icon">✓</span>
+                </label>
+              </div>
+              <div class="permission-content">
+                <div class="permission-title">戶籍地址</div>
+                <div class="permission-desc">用於戶籍驗證</div>
+              </div>
+            </div>
+
+            <div class="permission-item">
+              <div class="permission-checkbox">
+                <input type="checkbox" id="perm-nationality" checked disabled>
+                <label for="perm-nationality">
+                  <span class="checkbox-icon">✓</span>
+                </label>
+              </div>
+              <div class="permission-content">
+                <div class="permission-title">國籍</div>
+                <div class="permission-desc">用於國籍驗證</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="privacy-guarantee">
+            <div class="guarantee-icon">🔐</div>
+            <div class="guarantee-text">
+              <strong>隱私保證</strong><br>
+              這些資料僅用於生成驗證憑證，不會被儲存或分享給第三方。您可以隨時撤銷授權。
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button secondary" onclick="mydataModal.backToIntro()">返回</button>
+          <button class="modal-button primary" onclick="mydataModal.startConnection()">
+            授權並連接
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.setContent(html);
+  }
+
+  backToIntro() {
+    this.currentStep = 'intro';
+    this.renderIntroStep();
+  }
+
+  startConnection() {
+    this.currentStep = 'progress';
+    this.renderProgressStep();
+    
+    // 模擬連接過程
+    this.simulateConnection();
+  }
+
+  renderProgressStep() {
+    const html = `
+      <div class="mydata-progress">
+        <div class="step-indicator">
+          <div class="step-dots">
+            <span class="dot completed">✓</span>
+            <span class="dot completed">✓</span>
+            <span class="dot active"></span>
+            <span class="dot"></span>
+          </div>
+          <p class="step-text">步驟 3/4</p>
+        </div>
+
+        <div class="progress-content">
+          <div class="progress-icon">
+            <div class="loading-spinner">
+              <div class="spinner"></div>
+            </div>
+          </div>
+          
+          <h3 class="progress-title">正在連接 MyData</h3>
+          <p class="progress-description">
+            請稍候，正在安全地處理您的資料...
+          </p>
+
+          <div class="progress-steps">
+            <div class="progress-step active" id="step-connect">
+              <div class="step-status">
+                <span class="step-icon loading">🔄</span>
+                <span class="step-text">連接 MyData 服務...</span>
+              </div>
+            </div>
+            
+            <div class="progress-step" id="step-verify">
+              <div class="step-status">
+                <span class="step-icon pending">⏳</span>
+                <span class="step-text">驗證身份資訊...</span>
+              </div>
+            </div>
+            
+            <div class="progress-step" id="step-generate">
+              <div class="step-status">
+                <span class="step-icon pending">🔐</span>
+                <span class="step-text">生成驗證憑證...</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="progress-note">
+            <div class="note-icon">💡</div>
+            <div class="note-text">
+              首次連接可能需要 10-30 秒，請耐心等候。
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.setContent(html);
+  }
+
+  simulateConnection() {
+    // 第一步：連接 MyData 服務
+    setTimeout(() => {
+      this.updateProgressStep('step-connect', 'completed', '✅', '連接 MyData 服務完成');
+      this.updateProgressStep('step-verify', 'active', '🔄', '驗證身份資訊...');
+    }, 2000);
+
+    // 第二步：驗證身份資訊
+    setTimeout(() => {
+      this.updateProgressStep('step-verify', 'completed', '✅', '身份資訊驗證完成');
+      this.updateProgressStep('step-generate', 'active', '🔄', '生成驗證憑證...');
+    }, 4000);
+
+    // 第三步：生成驗證憑證
+    setTimeout(() => {
+      this.updateProgressStep('step-generate', 'completed', '✅', '驗證憑證生成完成');
+      
+      // 模擬成功或失敗
+      const isSuccess = Math.random() > 0.1; // 90% 成功率
+      
+      if (isSuccess) {
+        this.connectionData = {
+          name: '王小明',
+          id: 'A123456789',
+          nationality: '中華民國',
+          birth: '1995-03-15',
+          address: '台北市信義區信義路五段7號',
+          issueDate: '2020-01-15',
+          expiryDate: '2030-01-15'
+        };
+        
+        setTimeout(() => {
+          this.renderSuccessStep();
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          this.renderErrorStep('連接失敗，請稍後再試');
+        }, 1000);
+      }
+    }, 6000);
+  }
+
+  updateProgressStep(stepId, status, icon, text) {
+    const step = document.getElementById(stepId);
+    if (step) {
+      step.className = `progress-step ${status}`;
+      const iconSpan = step.querySelector('.step-icon');
+      const textSpan = step.querySelector('.step-text');
+      
+      if (iconSpan) iconSpan.textContent = icon;
+      if (textSpan) textSpan.textContent = text;
+    }
+  }
+
+  renderSuccessStep() {
+    this.currentStep = 'success';
+    
+    const html = `
+      <div class="mydata-success">
+        <div class="step-indicator">
+          <div class="step-dots">
+            <span class="dot completed">✓</span>
+            <span class="dot completed">✓</span>
+            <span class="dot completed">✓</span>
+            <span class="dot active">✓</span>
+          </div>
+          <p class="step-text">步驟 4/4</p>
+        </div>
+
+        <div class="success-content">
+          <div class="success-animation">
+            <div class="success-icon">
+              <span class="checkmark">✅</span>
+              <div class="celebration-particles">
+                <span class="particle">🎉</span>
+                <span class="particle">✨</span>
+                <span class="particle">🎊</span>
+              </div>
+            </div>
+          </div>
+          
+          <h3 class="success-title">設定完成！</h3>
+          <p class="success-description">
+            您的身分證已成功連接，現在可以開始使用身份驗證功能。
+          </p>
+
+          <div class="capability-preview">
+            <h4 class="preview-title">現在您可以驗證：</h4>
+            <div class="capability-list">
+              <div class="capability-item">
+                <span class="capability-icon">🇹🇼</span>
+                <span class="capability-text">國籍 (中華民國)</span>
+              </div>
+              <div class="capability-item">
+                <span class="capability-icon">📅</span>
+                <span class="capability-text">年齡 (基於出生日期)</span>
+              </div>
+              <div class="capability-item">
+                <span class="capability-icon">🏠</span>
+                <span class="capability-text">戶籍 (戶籍地址)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="next-steps">
+            <div class="steps-icon">💡</div>
+            <div class="steps-text">
+              <strong>接下來您可以：</strong><br>
+              • 分享身份資訊給他人驗證<br>
+              • 掃描他人的 QR Code 進行驗證<br>
+              • 在設定中管理您的連接
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button primary large" onclick="mydataModal.completeConnection()">
+            開始使用
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.setContent(html);
+  }
+
+  renderErrorStep(message) {
+    this.currentStep = 'error';
+    
+    const html = `
+      <div class="mydata-error">
+        <div class="error-content">
+          <div class="error-icon">
+            <span class="warning-icon">⚠️</span>
+          </div>
+          
+          <h3 class="error-title">連接失敗</h3>
+          <p class="error-description">${message}</p>
+
+          <div class="error-solutions">
+            <h4 class="solutions-title">請嘗試以下解決方案：</h4>
+            <div class="solution-list">
+              <div class="solution-item">
+                <span class="solution-icon">📶</span>
+                <span class="solution-text">確認網路連接正常</span>
+              </div>
+              <div class="solution-item">
+                <span class="solution-icon">🔄</span>
+                <span class="solution-text">檢查 MyData 服務狀態</span>
+              </div>
+              <div class="solution-item">
+                <span class="solution-icon">⏰</span>
+                <span class="solution-text">稍後重新嘗試</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="support-info">
+            <div class="support-icon">🆘</div>
+            <div class="support-text">
+              如果問題持續發生，請聯繫客服支援。
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="modal-button secondary" onclick="mydataModal.hide()">稍後再試</button>
+          <button class="modal-button primary" onclick="mydataModal.retryConnection()">
+            重新嘗試
+          </button>
+        </div>
+      </div>
+    `;
+
+    this.setContent(html);
+  }
+
+  retryConnection() {
+    this.startConnection();
+  }
+
+  completeConnection() {
+    // 調用 app 的連接方法
+    if (window.app) {
+      window.app.connectMyData();
+    }
+    
+    // 顯示成功提示
+    showToast('MyData 連接成功！', 'success');
+    
+    // 關閉 Modal
+    this.hide();
+  }
+}
+
+/**
  * 歷史記錄 Modal
  */
 class HistoryModal extends BaseModal {
@@ -578,11 +1028,92 @@ class HistoryModal extends BaseModal {
 }
 
 // 全域 Modal 實例
-let shareModal, verifyModal, historyModal;
+let shareModal, verifyModal, mydataModal, historyModal;
 
 // 初始化 Modal
 document.addEventListener('DOMContentLoaded', () => {
   shareModal = new ShareIdentityModal();
   verifyModal = new VerifyIdentityModal();
+  mydataModal = new MyDataConnectionModal();
   historyModal = new HistoryModal();
+  
+  // 全域 modals 對象
+  window.modals = {
+    showShareIdentity: (preselectedTypes) => shareModal.show(preselectedTypes),
+    showVerifyIdentity: () => verifyModal.show(),
+    showMyDataConnection: () => mydataModal.show(),
+    showHistory: () => historyModal.show()
+  };
 });
+
+// 工具函數
+function hapticFeedback(intensity = 'medium') {
+  // 模擬觸覺回饋
+  if (navigator.vibrate) {
+    const patterns = {
+      light: [10],
+      medium: [20],
+      heavy: [30]
+    };
+    navigator.vibrate(patterns[intensity] || patterns.medium);
+  }
+}
+
+function showToast(message, type = 'info') {
+  // 創建 toast 元素
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `
+    <div class="toast-content">
+      <span class="toast-icon">
+        ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+      </span>
+      <span class="toast-message">${message}</span>
+    </div>
+  `;
+  
+  // 添加到頁面
+  document.body.appendChild(toast);
+  
+  // 顯示動畫
+  setTimeout(() => toast.classList.add('show'), 100);
+  
+  // 自動隱藏
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => document.body.removeChild(toast), 300);
+  }, 3000);
+}
+
+function calculateAge(birthDate) {
+  const birth = new Date(birthDate);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+  
+  return age;
+}
+
+function formatTime() {
+  return new Date().toLocaleString('zh-TW', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+function getVerificationTypeName(type) {
+  const names = {
+    nationality: '國籍',
+    age: '年齡',
+    address: '戶籍地'
+  };
+  return names[type] || type;
+}

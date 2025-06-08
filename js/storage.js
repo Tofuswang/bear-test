@@ -18,6 +18,15 @@ class StorageManager {
       this.initializeDefaultData();
       this.set('initialized', true);
     }
+    
+    // 開發階段：強制重置資料以確保最新設定
+    // 可以在生產環境中移除這段代碼
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.log('Development mode: Resetting storage data');
+      this.clear();
+      this.initializeDefaultData();
+      this.set('initialized', true);
+    }
   }
 
   /**
@@ -31,8 +40,8 @@ class StorageManager {
       birth: '1990-05-15',
       address: '台北市大安區忠孝東路四段123號',
       nationality: '中華民國',
-      myDataConnected: true,
-      connectedAt: new Date().toISOString()
+      myDataConnected: false,
+      connectedAt: null
     };
 
     // 今日統計
@@ -375,3 +384,27 @@ class StorageManager {
 
 // 創建全域存儲管理實例
 const storage = new StorageManager();
+
+// 為了向後兼容，添加方法別名
+storage.getMyDataStatus = function() {
+  return this.isMyDataConnected();
+};
+
+storage.setMyDataStatus = function(status) {
+  return this.updateMyDataConnection(status);
+};
+
+storage.setUserData = function(userData) {
+  return this.set('user', userData);
+};
+
+storage.getVerificationRecords = function() {
+  return this.getHistoryRecords();
+};
+
+storage.addVerificationRecord = function(record) {
+  return this.addHistoryRecord(record);
+};
+
+// 暴露到全域
+window.storage = storage;
