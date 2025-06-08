@@ -3,9 +3,9 @@
 
 :root {
   /* iOS Color System */
-  --ios-blue: #007AFF;
-  --ios-blue-light: #5AC8FA;
-  --ios-blue-dark: #0051D5;
+  --ios-blue: #d80000;
+  --ios-blue-light: #ff4444;
+  --ios-blue-dark: #aa0000;
   --ios-green: #34C759;
   --ios-orange: #FF9500;
   --ios-red: #FF3B30;
