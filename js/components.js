@@ -1,7 +1,7 @@
 // Bearless MVP - Component Management
 
 /**
- * MyData 連接狀態組件
+ * 數位身分狀態組件
  */
 class MyDataStatusComponent {
   constructor(containerId) {
@@ -17,12 +17,12 @@ class MyDataStatusComponent {
     
     if (isConnected) {
       statusClass = 'connected';
-      statusText = 'MyData 已連接';
-      statusDescription = `已於 ${formatRelativeTime(new Date(userData.connectedAt))} 連接成功`;
+      statusText = '數位身分已取得';
+      statusDescription = `已於 ${formatRelativeTime(new Date(userData.connectedAt))} 取得成功`;
     } else {
       statusClass = 'disconnected';
-      statusText = 'MyData 未連接';
-      statusDescription = '請連接 MyData 以使用完整功能';
+      statusText = '數位身分未取得';
+      statusDescription = '請取得數位身分以使用完整功能';
     }
 
     this.container.innerHTML = `
@@ -357,7 +357,7 @@ class SettingsComponent {
   }
 
   async reconnectMyData() {
-    showToast('正在重新連接 MyData...', 'info');
+    showToast('正在重新取得數位身分...', 'info');
     
     try {
       await delay(2000); // 模擬連接過程
@@ -371,7 +371,7 @@ class SettingsComponent {
         window.idCard.update();
       }
       
-      showToast('MyData 重新連接成功', 'success');
+      showToast('數位身分重新取得成功', 'success');
     } catch (error) {
       showToast('連接失敗，請稍後再試', 'error');
     }

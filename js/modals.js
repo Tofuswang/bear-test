@@ -831,7 +831,7 @@ class VerifyIdentityModal extends BaseModal {
 }
 
 /**
- * MyData 連接 Modal
+ * 數位身分取得 Modal
  */
 class MyDataConnectionModal extends BaseModal {
   constructor() {
@@ -867,7 +867,7 @@ class MyDataConnectionModal extends BaseModal {
             </div>
           </div>
           
-          <h3 class="intro-title">連接 MyData 帳戶</h3>
+          <h3 class="intro-title">取得數位身分</h3>
           <p class="intro-description">
             MyData 是政府提供的數位身分服務，讓您安全地管理個人資料。
           </p>
@@ -1044,7 +1044,7 @@ class MyDataConnectionModal extends BaseModal {
             </div>
           </div>
           
-          <h3 class="progress-title">正在連接 MyData</h3>
+          <h3 class="progress-title">正在取得數位身分</h3>
           <p class="progress-description">
             請稍候，正在安全地處理您的資料...
           </p>
@@ -1053,7 +1053,7 @@ class MyDataConnectionModal extends BaseModal {
             <div class="progress-step active" id="step-connect">
               <div class="step-status">
                 <span class="step-icon loading">🔄</span>
-                <span class="step-text">連接 MyData 服務...</span>
+                <span class="step-text">連接身分驗證服務...</span>
               </div>
             </div>
             
@@ -1086,9 +1086,9 @@ class MyDataConnectionModal extends BaseModal {
   }
 
   simulateConnection() {
-    // 第一步：連接 MyData 服務
+    // 第一步：連接身分驗證服務
     setTimeout(() => {
-      this.updateProgressStep('step-connect', 'completed', '✅', '連接 MyData 服務完成');
+      this.updateProgressStep('step-connect', 'completed', '✅', '身分驗證服務連接完成');
       this.updateProgressStep('step-verify', 'active', '🔄', '驗證身份資訊...');
     }, 2000);
 
@@ -1233,7 +1233,7 @@ class MyDataConnectionModal extends BaseModal {
               </div>
               <div class="solution-item">
                 <span class="solution-icon">🔄</span>
-                <span class="solution-text">檢查 MyData 服務狀態</span>
+                <span class="solution-text">檢查身分驗證服務狀態</span>
               </div>
               <div class="solution-item">
                 <span class="solution-icon">⏰</span>
@@ -1273,7 +1273,7 @@ class MyDataConnectionModal extends BaseModal {
     }
     
     // 顯示成功提示
-    showToast('MyData 連接成功！', 'success');
+    showToast('數位身分取得成功！', 'success');
     
     // 關閉 Modal
     this.hide();

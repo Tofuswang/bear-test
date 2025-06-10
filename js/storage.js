@@ -306,7 +306,7 @@ class StorageManager {
   }
 
   /**
-   * 檢查 MyData 連接狀態
+   * 檢查數位身分取得狀態
    */
   isMyDataConnected() {
     const userData = this.getUserData();
@@ -314,7 +314,7 @@ class StorageManager {
   }
 
   /**
-   * 更新 MyData 連接狀態
+   * 更新數位身分取得狀態
    */
   updateMyDataConnection(connected) {
     const updateData = {

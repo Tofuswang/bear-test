@@ -135,7 +135,7 @@ class BearlessApp {
                 mydataStatus.innerHTML = `
                     <div class="mydata-status connected">
                         <div class="mydata-status-header">
-                            <h3 class="mydata-status-title">MyData 已連接</h3>
+                            <h3 class="mydata-status-title">數位身分已取得</h3>
                             <div class="mydata-status-indicator connected"></div>
                         </div>
                         <p class="mydata-status-description">您的身分證資料已安全連接，可以開始進行身份驗證。</p>
@@ -187,13 +187,13 @@ class BearlessApp {
                 mydataStatus.innerHTML = `
                     <div class="mydata-status disconnected">
                         <div class="mydata-status-header">
-                            <h3 class="mydata-status-title">尚未連接 MyData</h3>
+                            <h3 class="mydata-status-title">尚未取得數位身分</h3>
                             <div class="mydata-status-indicator disconnected"></div>
                         </div>
-                        <p class="mydata-status-description">請先連接您的 MyData 帳戶以開始使用身份驗證功能。</p>
+                        <p class="mydata-status-description">請先取得您的數位身分以開始使用身份驗證功能。</p>
                         <button class="primary-button" id="connect-mydata-btn" style="margin-top: 16px;">
                             <span class="button-icon">🔗</span>
-                            <span class="button-text">連接 MyData</span>
+                            <span class="button-text">取得數位身分</span>
                             <span class="button-arrow">→</span>
                         </button>
                     </div>
